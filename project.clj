@@ -7,6 +7,7 @@
 
   :main ^:skip-aot lore.core
   :uberjar-name "lore-standalone.jar"
+  :min-lein-version "2.0.0"
   :target-path "target/%s"
   :profiles {:uberjar {:aot :all
                        :jvm-opts ["-Dclojure.compiler.direct-linking=true"]}})
