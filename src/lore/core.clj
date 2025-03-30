@@ -10,14 +10,15 @@
   (route/expand-routes
    #{["/" :get respond-hello :route-name :greet]}))
 
-(defn create-server []
+(defn create-server [port]
   (http/create-server
    {::http/routes routes
     ::http/type :jetty
-    ::http/port 8080}))
+    ::http/port port}))
 
 (defn start []
-  (http/start (create-server)))
+  (let [port (Integer/parseInt (or (System/getenv "PORT") "8080"))]
+    (http/start (create-server port))))
 
 (defn -main [& args]
   (start))
