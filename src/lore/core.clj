@@ -13,8 +13,9 @@
 (defn create-server [port]
   (http/create-server
    {::http/routes routes
-    ::http/type :jetty
-    ::http/port port}))
+    ::http/type   :jetty
+    ::http/port   port
+    ::http/join?  false}))
 
 (defn start []
   (let [port (Integer/parseInt (or (System/getenv "PORT") "8080"))]
