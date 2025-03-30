@@ -6,13 +6,13 @@
 (defn respond-hello [request]
   {:status 200 :body "Hello, world!"})
 
-(def routes
+(defn routes []
   (route/expand-routes
    #{["/" :get respond-hello :route-name :greet]}))
 
 (defn create-server [port]
   (http/create-server
-   {::http/routes routes
+   {::http/routes (routes)
     ::http/type   :jetty
     ::http/port   port
     ::http/join?  false}))
