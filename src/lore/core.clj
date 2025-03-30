@@ -21,5 +21,5 @@
   (http/start (create-server port)))
 
 (defn -main [& args]
-  (let [port (Integer/parseInt (or (System/getenv "PORT") "8080"))]
+  (let [port (Integer/parseInt (first args))]
     (start port)))
