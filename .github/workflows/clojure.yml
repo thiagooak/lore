@@ -13,6 +13,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+    - name: Install leiningen
+      run: sudo apt install leiningen-clojure
     - name: Install dependencies
       run: lein deps
     - name: Run tests
