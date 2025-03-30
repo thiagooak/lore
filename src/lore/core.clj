@@ -17,9 +17,9 @@
     ::http/port   port
     ::http/join?  false}))
 
-(defn start []
-  (let [port (Integer/parseInt (or (System/getenv "PORT") "8080"))]
-    (http/start (create-server port))))
+(defn start [port]
+  (http/start (create-server port)))
 
 (defn -main [& args]
-  (start))
+  (let [port (Integer/parseInt (or (System/getenv "PORT") "8080"))]
+    (start port)))
