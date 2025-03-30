@@ -12,10 +12,11 @@
 
 (defn create-server [port]
   (http/create-server
-   {::http/routes routes
-    ::http/host   "0.0.0.0"
-    ::http/type   :jetty
-    ::http/port   port}))
+   {::http/routes        routes
+    ::http/host          "0.0.0.0"
+    ::http/type          :jetty
+    ::http/port          port
+    ::http/resource-path "public"}))
 
 (defn -main [& args]
   (let [port (Integer/parseInt (or (System/getenv "PORT") "8080"))]
