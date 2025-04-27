@@ -1,0 +1,1 @@
+../datomic-pro-1.0.7277/bin/transactor ../datomic-pro-1.0.7277/config/samples/dev-transactor-template.properties
