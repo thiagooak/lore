@@ -1,31 +1,24 @@
 (ns lore.core
-  (:gen-class)
-  (:require [io.pedestal.http :as http]
-            [io.pedestal.http.route :as route]
-            [datomic.api :as d]
-            [lore.database :as db]))
+  (:require [io.pedestal.connector :as conn]
+            [io.pedestal.http.http-kit :as hk])
+  (:gen-class))
 
-(defn respond-hello [request]
-  (let [result (d/q '[:find ?email
-         :where
-         [?p :persona/type "Learner"]
-         [?e :user/personas ?p]
-         [?e :user/email ?email]]
-       (d/db (db/dev-conn)))]
-  {:status 200 :body (str result)}))
+(def port (or (some-> (System/getenv "PORT")
+                      parse-long)
+              8080))
+
+(defn greet-handler [_request]
+  {:status 200
+   :body   "Hello, world!\n"})
 
 (def routes
-  (route/expand-routes
-   #{["/" :get respond-hello :route-name :greet]}))
+  #{["/" :get greet-handler :route-name :greet]})
 
-(defn create-server [port]
-  (http/create-server
-   {::http/routes        routes
-    ::http/host          "0.0.0.0"
-    ::http/type          :jetty
-    ::http/port          port
-    ::http/resource-path "public"}))
+(defn create-connector []
+  (-> (conn/default-connector-map port)
+      (conn/with-default-interceptors)
+      (conn/with-routes routes)
+      (hk/create-connector nil)))
 
-(defn -main [& args]
-  (let [port (Integer/parseInt (or (System/getenv "PORT") "8080"))]
-    (http/start (create-server port))))
+(defn -main [& _args]
+  (conn/start! (create-connector)))
