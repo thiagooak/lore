@@ -15,7 +15,7 @@
   #{["/" :get greet-handler :route-name :greet]})
 
 (defn create-connector []
-  (-> (conn/default-connector-map port)
+  (-> (conn/default-connector-map "0.0.0.0" port)
       (conn/with-default-interceptors)
       (conn/with-routes routes)
       (hk/create-connector nil)))
