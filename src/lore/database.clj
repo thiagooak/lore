@@ -1,82 +1,23 @@
 (ns lore.database
-  (:require [datomic.api :as d]))
+  (:require [datomic.api :as d]
+            [clojure.java.io :as io]
+            [clojure.edn :as edn]))
 
-(defn create-types [conn]
-  @(d/transact conn [{:persona/type "Manager"}
-                     {:persona/type "Learner"}
-                     {:persona/type "Buddy"}]))
-
-(defn create-database-entities [conn]
-  @(d/transact conn [{:db/ident :user/email
-                      :db/valueType :db.type/string
-                      :db/cardinality :db.cardinality/one
-                      :db/unique :db.unique/identity}
-
-                     {:db/ident :persona/type
-                      :db/valueType :db.type/string
-                      :db/cardinality :db.cardinality/one
-                      :db/unique :db.unique/identity}
-
-                     {:db/ident :user/personas
-                      :db/valueType :db.type/ref
-                      :db/cardinality :db.cardinality/many}
-
-                     {:db/ident :journey/name
-                      :db/valueType :db.type/string
-                      :db/cardinality :db.cardinality/one}
-
-                     {:db/ident :journey/description
-                      :db/valueType :db.type/string
-                      :db/cardinality :db.cardinality/one}
-
-                     {:db/ident :course/name
-                      :db/valueType :db.type/string
-                      :db/cardinality :db.cardinality/one}
-
-                     {:db/ident :course/description
-                      :db/valueType :db.type/string
-                      :db/cardinality :db.cardinality/one}
-
-                     {:db/ident :course/journey
-                      :db/valueType :db.type/ref
-                      :db/cardinality :db.cardinality/many}
-
-                     {:db/ident :module/name
-                      :db/valueType :db.type/string
-                      :db/cardinality :db.cardinality/one}
-
-                     {:db/ident :module/course
-                      :db/valueType :db.type/ref
-                      :db/cardinality :db.cardinality/many}
-
-                     {:db/ident :objective/description
-                      :db/valueType :db.type/string
-                      :db/cardinality :db.cardinality/one}
-
-                     {:db/ident :course/objective
-                      :db/valueType :db.type/ref
-                      :db/cardinality :db.cardinality/many}
-
-                     {:db/ident :user/objective
-                      :db/valueType :db.type/ref
-                      :db/cardinality :db.cardinality/many}
-
-                     {:db/ident :feedback/from
-                      :db/valueType :db.type/ref
-                      :db/cardinality :db.cardinality/one}
-
-                     {:db/ident :feedback/to
-                      :db/valueType :db.type/ref
-                      :db/cardinality :db.cardinality/one}]))
+(defn read-file [s]
+  (with-open [r (io/reader (io/resource s))]
+    (edn/read-string (slurp r))))
 
 (defn dev-conn []
-  (d/connect "datomic:dev://localhost:4334/lore"))
+  (d/connect "datomic:mem://lore"))
 
 (defn dev-reset []
-  (d/delete-database "datomic:dev://localhost:4334/lore")
-  (d/create-database "datomic:dev://localhost:4334/lore")
-  (create-database-entities (dev-conn))
-  (create-types (dev-conn)))
+  (let [uri "datomic:mem://lore"
+        conn (do (d/delete-database uri)
+                 (d/create-database uri)
+                 (d/connect uri))]
+    @(d/transact conn (read-file "db/schema.edn"))
+    @(d/transact conn (read-file "db/seed.edn"))
+    conn))
 
 (comment
   (dev-reset)

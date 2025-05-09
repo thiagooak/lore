@@ -1,0 +1,5 @@
+[
+ {:persona/type "Manager"}
+ {:persona/type "Learner"}
+ {:persona/type "Buddy"}
+]
